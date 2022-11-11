@@ -1,0 +1,19 @@
+post_install() {
+	getent group sfsrv >/dev/null || groupadd --system sfsrv
+	getent passwd sfsrv >/dev/null || useradd --system -g sfsrv -d /srv/sfsrv/ -s /bin/bash sfsrv
+
+	chown -R sfsrv:sfsrv srv/sfsrv
+	loginctl enable-linger sfsrv
+	systemctl start user@$(id -u sfsrv).service
+}
+
+post_upgrade() {
+	chown -R sfsrv:sfsrv srv/sfsrv/.config/systemd/user
+	chown sfsrv:sfsrv srv/sfsrv/*
+}
+
+post_remove() {
+	loginctl disable-linger sfsrv
+	systemctl stop user@$(id -u sfsrv).service
+	userdel --remove sfsrv
+}

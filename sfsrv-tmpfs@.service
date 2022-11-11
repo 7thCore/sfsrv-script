@@ -1,0 +1,48 @@
+#    Copyright (C) 2022 7thCore
+#    This file is part of SfSrv-Script.
+#
+#    SfSrv-Script is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    (at your option) any later version.
+#
+#    SfSrv-Script is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+[Unit]
+Description=Satisfactory TmpFs Server Service
+Requires=sfsrv-mkdir-tmpfs@%i.service
+After=network.target srv-sfsrv-tmpfs.mount sfsrv-mkdir-tmpfs@%i.service
+Conflicts=sfsrv@%i.service
+StartLimitBurst=3
+StartLimitIntervalSec=300
+StartLimitAction=none
+OnFailure=sfsrv-send-notification@.service
+
+[Service]
+EnvironmentFile=/srv/sfsrv/environments/%i.env
+Environment=export LD_LIBRARY_PATH=/srv/sfsrv/tmpfs/%i/linux64
+Type=forking
+KillMode=none
+WorkingDirectory=/srv/sfsrv/tmpfs/%i
+ExecStartPre=/usr/bin/sfsrv-script pre-start %i tmpfs
+ExecStartPre=/usr/bin/sfsrv-script server_tmux_install %i
+ExecStart=/usr/bin/tmux -f /tmp/%u-%i-tmux.conf -L %u-%i-tmux.sock new-session -d -s SfSrv '/srv/sfsrv/tmpfs/%i/Engine/Binaries/Linux/UE4Server-Linux-Shipping" FactoryGame "-ServerQueryPort=<QUERY_PORT> -BeaconPort=<BEACON_PORT> -Port=<GAME_PORT> -log -unattended"'
+ExecStartPost=/usr/bin/sfsrv-script post-start %i
+ExecStop=/usr/bin/sfsrv-script pre-stop %i
+ExecStop=/usr/bin/kill -s SIGTERM $(/usr/bin/tmux -L %u-%i-tmux.sock list-panes -t SfSrv -F '#{pane_pid}')
+ExecStop=/usr/bin/sleep 5
+ExecStop=/usr/bin/kill -s SIGTERM $(/usr/bin/tmux -L %u-%i-tmux.sock list-panes -t SfSrv -F '#{pane_pid}')
+ExecStopPost=/usr/bin/sfsrv-script post-stop %i tmpfs
+TimeoutStartSec=infinity
+TimeoutStopSec=120
+RestartSec=10
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
