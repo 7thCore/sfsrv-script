@@ -1,0 +1,13 @@
+getent group sfsrv >/dev/null || groupadd --system sfsrv
+getent passwd sfsrv >/dev/null || useradd --system -g sfsrv -d /srv/sfsrv/ -s /bin/bash sfsrv
+
+install -dm700 srv/sfsrv/backups
+install -dm700 srv/sfsrv/config
+install -dm700 srv/sfsrv/environments
+install -dm700 srv/sfsrv/logs
+install -dm700 srv/sfsrv/server
+install -dm700 srv/sfsrv/tmpfs
+install -dm700 srv/sfsrv/updates
+chown -R sfsrv:sfsrv srv/sfsrv
+loginctl enable-linger sfsrv
+systemctl start user@$(id -u sfsrv).service

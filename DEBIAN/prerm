@@ -1,0 +1,2 @@
+loginctl disable-linger sfsrv
+systemctl stop user@$(id -u sfsrv).service
