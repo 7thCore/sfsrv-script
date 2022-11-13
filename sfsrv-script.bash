@@ -21,7 +21,7 @@
 
 #Static script variables
 export NAME="SfSrv" #Name of the tmux session.
-export VERSION="1.1-1" #Package and script version.
+export VERSION="1.2-1" #Package and script version.
 export SERVICE_NAME="sfsrv" #Name of the service files, user, script and script log.
 export LOG_DIR="/srv/$SERVICE_NAME/logs" #Location of the script's log files.
 export LOG_STRUCTURE="$LOG_DIR/$(date +"%Y")/$(date +"%m")/$(date +"%d")" #Folder structure of the script's log files.
@@ -581,6 +581,16 @@ script_prestop() {
 		script_email_message "$NAME-$1" "Notification: Server shutdown $1" "Server shutdown was initiated at $(date +"%d.%m.%Y %H:%M:%S")"
 	fi
 	echo "$(date +"%Y-%m-%d %H:%M:%S") [$VERSION] [$NAME] (Stop) Server shutdown for $1 was initialized." | tee -a "$LOG_SCRIPT"
+}
+
+#--------------------------
+
+#Pre-stop functions to be called by the systemd service
+script_peristop() {
+	SERVICE_PID=$(/usr/bin/tmux -L $SERVICE_NAME-$1-tmux.sock list-panes -t $NAME -F '#{pane_pid}')
+	/usr/bin/kill -s SIGTERM $SERVICE_PID
+	sleep 5
+	/usr/bin/kill -s SIGTERM $SERVICE_PID
 }
 
 #--------------------------
@@ -1637,7 +1647,7 @@ script_config_script() {
 #--------------------------
 
 #Do not allow for another instance of this script to run to prevent data loss
-if [[ "pre-start" != "$1" ]] && [[ "post-start" != "$1" ]] && [[ "pre-stop" != "$1" ]] && [[ "post-stop" != "$1" ]] && [[ "send_notification_crash" != "$1" ]] && [[ "server_tmux_install" != "$1" ]] && [[ "attach" != "$1" ]] && [[ "status" != "$1" ]]; then
+if [[ "pre-start" != "$1" ]] && [[ "post-start" != "$1" ]] && [[ "pre-stop" != "$1" ]] && [[ "peri-stop" != "$1" ]] && [[ "post-stop" != "$1" ]] && [[ "send_notification_crash" != "$1" ]] && [[ "server_tmux_install" != "$1" ]] && [[ "attach" != "$1" ]] && [[ "status" != "$1" ]]; then
 	SCRIPT_PID_CHECK=$(basename -- "$0")
 	if pidof -x "$SCRIPT_PID_CHECK" -o $$ > /dev/null; then
 		echo "An another instance of this script is already running, please clear all the sessions of this script before starting a new session"
@@ -1771,6 +1781,9 @@ case "$1" in
 		;;
 	post-start)
 		script_poststart $2
+		;;
+	peri-stop)
+		script_peristop $2
 		;;
 	pre-stop)
 		script_prestop $2
