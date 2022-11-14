@@ -31,7 +31,7 @@ KillMode=none
 WorkingDirectory=/srv/sfsrv/server/%i
 ExecStartPre=/usr/bin/sfsrv-script pre-start %i
 ExecStartPre=/usr/bin/sfsrv-script server_tmux_install %i
-ExecStart=/usr/bin/tmux -f /tmp/%u-%i-tmux.conf -L %u-%i-tmux.sock new-session -d -s SfSrv '/srv/sfsrv/server/%i/Engine/Binaries/Linux/UE4Server-Linux-Shipping FactoryGame "-ServerQueryPort=${QUERY_PORT} -BeaconPort=${BEACON_PORT} -Port=${GAME_PORT} -log -unattended"'
+ExecStart=/usr/bin/tmux -f /tmp/%u-%i-tmux.conf -L %u-%i-tmux.sock new-session -d -s SfSrv '/srv/sfsrv/server/%i/Engine/Binaries/Linux/UE4Server-Linux-Shipping FactoryGame -ServerQueryPort=${QUERY_PORT} -BeaconPort=${BEACON_PORT} -Port=${GAME_PORT} -log -unattended'
 ExecStartPost=/usr/bin/sfsrv-script post-start %i
 ExecStop=/usr/bin/sfsrv-script pre-stop %i
 ExecStop=/usr/bin/sfsrv-script peri-stop %i

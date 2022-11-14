@@ -16,7 +16,7 @@
 
 pkgname=sfsrv-script
 pkgver=1.2
-pkgrel=1
+pkgrel=2
 pkgdesc='Satisfactory server script for running the server on linux.'
 arch=('x86_64')
 license=('GPL3')
@@ -51,14 +51,14 @@ source=('bash_profile'
         'sfsrv-tmpfs@.service')
 sha256sums=('f1e2f643b81b27d16fe79e0563e39c597ce42621ae7c2433fd5b70f1eeab5d63'
             '2b5c790ee74f0a123c05bbfe632a9c0cf6be28baa3bdc29f47eac4850fdca83e'
-            'bb9c083c79554d220017ee9a21dbb076acf49ef1e3330fbb8455a11837b7c590'
+            'a672fa62c567a767b1f0fe632c93dde3334a41a83fd0db09ea32e61644a008de'
             'b372bba5101c13c04148724dc56f2686906bbeb919883d33c76b2101e8286ee2'
-            '6d97c2c1e4af5d076511f78531b91d5ef314770748bf77a5d554347651799646'
+            'a0bb2eafa4fef13e416bc3519b90871d9b4374040e7bb079ebbedf52c9b6d962'
             '9de872b1fbaa9de17efad7c837b24f7a78099bd8a2a53cc2a01d733ff98ed5eb'
             'e125c9e09ded898d17a0cebc8364c18be197151933e6b8a9aa07c6a32cf15f46'
             '7cbf79572aa190bdb52017c4b2036f8bb98c281248c4b270fdec43df2cd80f69'
             'd1bac7525488894cfdaabb0965c77ecb27e5844ba8b2aed56ee40c7c072e368e'
-            '09afa899652b1fb24ae22eeffb935d2850937de34c2ad4fa17feaa0e78c52339')
+            'e2a46198440fcbde60d578b1ae9be7c2dbb2068a2b4571a74089fdfd0bceee03')
 
 package() {
   install -d -m0755 "${pkgdir}/usr/bin"
